@@ -1,9 +1,12 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { useVendorContext } from './VendorContext';
+import { useDispatch } from 'react-redux';
+import { setSelectedVendor } from './store';
 
 const Vendors = () => {
   const { setVendor } = useVendorContext();
+  const dispatch = useDispatch();
   const history = useHistory();
   const vendors = [{ id: 1, name: 'Vendor A' }, { id: 2, name: 'Vendor B' }]; // Example vendors
 
@@ -13,8 +16,8 @@ const Vendors = () => {
   }
 
   const selectVendor = (vendor: Vendor) => {
-    setVendor(vendor); // Update the global state with selected vendor
-    history.push('/'); // Navigate back to the dashboard
+    dispatch(setSelectedVendor(vendor));
+    history.push('/');
   };
 
   return (
