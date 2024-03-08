@@ -1,25 +1,30 @@
-// store.ts
 import { configureStore, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface Vendor {
   id: number;
   name: string;
+  type: string;
 }
 
 interface AppState {
-  selectedVendor: Vendor | null;
+  selectedVendors: {
+    photography?: Vendor;
+    venue?: Vendor;
+    catering?: Vendor;
+  };
 }
 
 const initialAppState: AppState = {
-  selectedVendor: null,
+  selectedVendors: {},
 };
 
 const vendorSlice = createSlice({
   name: 'vendor',
   initialState: initialAppState,
   reducers: {
-    setSelectedVendor(state, action: PayloadAction<Vendor | null>) {
-      state.selectedVendor = action.payload;
+    setSelectedVendor(state, action: PayloadAction<Vendor>) {
+      const vendor = action.payload;
+      state.selectedVendors[vendor.type.toLowerCase() as keyof AppState['selectedVendors']] = vendor;
     },
   },
 });
@@ -32,8 +37,5 @@ export const store = configureStore({
   },
 });
 
-// TypeScript type for RootState
 export type RootState = ReturnType<typeof store.getState>;
-
-// TypeScript type for AppDispatch
 export type AppDispatch = typeof store.dispatch;
