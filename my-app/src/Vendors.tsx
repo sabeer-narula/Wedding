@@ -2,7 +2,7 @@ import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { setSelectedVendor } from './store';
-import Header from './header';
+import Header from './Header';
 
 const Vendors = () => {
   const dispatch = useDispatch();
@@ -37,6 +37,10 @@ const Vendors = () => {
     dispatch(setSelectedVendor(vendor));
   };
 
+  const handleViewVendor = (vendorId: number) => {
+    history.push(`/vendors/${vendorId}`);
+  };
+
   const handleSubmit = () => {
     history.push('/');
   };
@@ -50,19 +54,25 @@ const Vendors = () => {
           {Object.entries(vendors).map(([category, options]) => (
             <div key={category} className="border p-4 rounded-lg">
               <h3 className="text-2xl font-semibold mb-2">{category.charAt(0).toUpperCase() + category.slice(1)}</h3>
-              <ul>
-                {options.map((vendor) => (
-                  <li key={vendor.id} className="mb-2">
-                    {vendor.name} - ${vendor.price}
-                    <button
-                      onClick={() => selectVendor(vendor)}
-                      className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded ml-2"
-                    >
-                      Select
-                    </button>
-                  </li>
-                ))}
-              </ul>
+            <ul>
+            {options.map((vendor) => (
+                <li key={vendor.id} className="mb-2">
+                <span
+                    className="text-blue-500 cursor-pointer"
+                    onClick={() => handleViewVendor(vendor.id)}
+                >
+                    {vendor.name}
+                </span>{' '}
+                - ${vendor.price}
+                <button
+                    onClick={() => selectVendor(vendor)}
+                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded ml-2"
+                >
+                    Select
+                </button>
+                </li>
+            ))}
+            </ul>
             </div>
           ))}
         </div>
