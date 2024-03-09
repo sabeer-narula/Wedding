@@ -13,6 +13,9 @@ const Header = () => {
           <li>
             <Link to="/vendors" className="hover:text-gray-300">Vendors</Link>
           </li>
+          <li>
+            <Link to="/login" className="hover:text-gray-300">Login</Link>
+          </li>
         </ul>
       </nav>
     </header>
