@@ -5,6 +5,7 @@ import Vendors from './Vendors';
 import VendorPage from './VendorPage';
 import Login from './Login';
 import SignUp from './Signup';
+import TodoList from './Todo';
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
         <Route path="/" exact component={Dashboard} />
         <Route path="/vendors" exact component={Vendors} />
         <Route path="/vendors/:vendorId" component={VendorPage} />
+        <Route path="/todo" component={TodoList} />
       </Switch>
     </Router>
   );

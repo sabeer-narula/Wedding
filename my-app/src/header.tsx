@@ -16,6 +16,9 @@ const Header = () => {
           <li>
             <Link to="/login" className="hover:text-gray-300">Login</Link>
           </li>
+          <li>
+            <Link to="/todo" className="hover:text-gray-300">To Do List</Link>
+          </li>
         </ul>
       </nav>
     </header>
