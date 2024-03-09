@@ -1,10 +1,10 @@
 const vendorData = [
     {
         id: 1,
-        name: "Steven's Wedding Photography Express",
+        name: "Steven's Wedding Photography",
         type: 'photography',
         price: 1500,
-        photos: ['/vendorphotos/stevensweddingphotographyexpress/photo1.jpeg'],
+        photos: ['/vendorphotos/photography/stevensweddingphotography/photo1.jpeg'],
         reviews: [
           {
             rating: 5,
@@ -23,7 +23,7 @@ const vendorData = [
         name: 'Capture The Moment',
         type: 'photography',
         price: 2000,
-        photos: ['/vendorphotos/capturethemoment/photo1.jpeg'],
+        photos: ['/vendorphotos/photography/capturethemoment/photo1.jpeg'],
         reviews: [
           {
             rating: 4,
@@ -42,7 +42,7 @@ const vendorData = [
         name: 'Dream Shots',
         type: 'photography',
         price: 1800,
-        photos: ['/vendorphotos/dreamshots/photo1.jpeg'],
+        photos: ['/vendorphotos/photography/dreamshots/photo1.jpeg'],
         reviews: [
           {
             rating: 5,
@@ -61,7 +61,7 @@ const vendorData = [
       name: "Martha's Vineyard",
       type: 'venue',
       price: 15000,
-      photos: ['/vendorPhotos/marthasvineyard/photo2.webp'],
+      photos: ['/vendorPhotos/venue/marthasvineyard/photo1.webp'],
       reviews: [
         {
           rating: 4,
@@ -80,7 +80,7 @@ const vendorData = [
       name: 'Elegant Affairs',
       type: 'venue',
       price: 6000,
-      photos: ['/vendorPhotos/elegantaffairs/photo3.jpeg'],
+      photos: ['/vendorPhotos/venue/elegantaffairs/photo1.jpeg'],
       reviews: [
         {
           rating: 5,
@@ -100,7 +100,7 @@ const vendorData = [
       name: 'Celebrate in Style',
       type: 'venue',
       price: 3500,
-      photos: ['/vendorPhotos/celebrateinstyle/photo1.jpg'],
+      photos: ['/vendorPhotos/venue/celebrateinstyle/photo1.jpg'],
       reviews: [
         {
           rating: 4,
@@ -119,7 +119,7 @@ const vendorData = [
         name: 'Gourmet Wedding Feasts',
         type: 'catering',
         price: 3000,
-        photos: ['/vendorphotos/gourmetweddingfeasts/photo1.jpeg'],
+        photos: ['/vendorphotos/catering/gourmetweddingfeasts/photo1.jpeg'],
         reviews: [
           {
             rating: 5,
@@ -138,7 +138,7 @@ const vendorData = [
         name: 'Savory Celebrations',
         type: 'catering',
         price: 3500,
-        photos: ['/vendorphotos/savorycelebrations/photo1.jpeg'],
+        photos: ['/vendorphotos/catering/savorycelebrations/photo1.webp'],
         reviews: [
           {
             rating: 4,
@@ -157,7 +157,7 @@ const vendorData = [
         name: 'Bites and Delights',
         type: 'catering',
         price: 2800,
-        photos: ['/vendorphotos/bitesanddelights/photo1.jpeg'],
+        photos: ['/vendorphotos/catering/bitesanddelights/photo1.jpeg'],
         reviews: [
           {
             rating: 5,

@@ -1,36 +1,22 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { setSelectedVendor } from './store';
 import Header from './Header';
+import vendorData from './vendorData';
 
 const Vendors = () => {
   const dispatch = useDispatch();
   const history = useHistory();
-
-  const vendors = {
-    photography: [
-      { id: 1, name: "Steven's Wedding Photography", type: 'photography', price: 1500 },
-      { id: 2, name: "Capture The Moment", type: 'photography', price: 2000 },
-      { id: 3, name: "Dream Shots", type: 'photography', price: 1800 }
-    ],
-    venue: [
-      { id: 4, name: "Martha's Vineyard", type: 'venue', price: 15000 },
-      { id: 5, name: "Elegant Affairs", type: 'venue', price: 6000 },
-      { id: 6, name: "Celebrate in Style", type: 'venue', price: 3500 }
-    ],
-    catering: [
-      { id: 7, name: "Gourmet Wedding Feasts", type: 'catering', price: 3000 },
-      { id: 8, name: "Savory Celebrations", type: 'catering', price: 3500 },
-      { id: 9, name: "Bites and Delights", type: 'catering', price: 2800 }
-    ]
-  };
+  const [selectedType, setSelectedType] = useState('');
 
   interface Vendor {
     id: number;
     name: string;
     type: string;
     price: number;
+    photos: string[];
+    reviews: { rating: number; review: string }[];
   }
 
   const selectVendor = (vendor: Vendor) => {
@@ -45,34 +31,72 @@ const Vendors = () => {
     history.push('/');
   };
 
+  const handleTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedType(e.target.value);
+  };
+
+  const filteredVendors = selectedType
+    ? vendorData.filter((vendor) => vendor.type === selectedType)
+    : vendorData;
+
+  const calculateAverageRating = (reviews: { rating: number; review: string }[]) => {
+    if (reviews.length === 0) {
+      return 0;
+    }
+    const totalRating = reviews.reduce((sum, review) => sum + review.rating, 0);
+    return Math.round(totalRating / reviews.length);
+  };
+
   return (
     <>
       <Header />
       <div className="container mx-auto p-4">
         <h2 className="text-3xl font-bold underline mb-4">Select Vendors</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {Object.entries(vendors).map(([category, options]) => (
-            <div key={category} className="border p-4 rounded-lg">
-              <h3 className="text-2xl font-semibold mb-2">{category.charAt(0).toUpperCase() + category.slice(1)}</h3>
-            <ul>
-            {options.map((vendor) => (
-                <li key={vendor.id} className="mb-2">
-                <span
-                    className="text-blue-500 cursor-pointer"
-                    onClick={() => handleViewVendor(vendor.id)}
-                >
-                    {vendor.name}
-                </span>{' '}
-                - ${vendor.price}
+        <div className="mb-4">
+          <label htmlFor="vendorType" className="block mb-2">Filter by Vendor Type:</label>
+          <select
+            id="vendorType"
+            className="w-full px-3 py-2 border rounded"
+            value={selectedType}
+            onChange={handleTypeChange}
+          >
+            <option value="">All</option>
+            <option value="photography">Photography</option>
+            <option value="venue">Venue</option>
+            <option value="catering">Catering</option>
+          </select>
+        </div>
+        <div className="grid grid-cols-1 gap-4 max-h-96 overflow-y-auto">
+          {filteredVendors.map((vendor) => (
+            <div key={vendor.id} className="border p-4 rounded-lg">
+              <div className="flex items-center mb-2">
+                <img src={process.env.PUBLIC_URL + vendor.photos[0]} alt={vendor.name} className="w-24 h-24 object-cover rounded-lg mr-4" />
+                <div>
+                  <h3 className="text-xl font-semibold">{vendor.name}</h3>
+                  <p className="text-gray-600">${vendor.price}</p>
+                  <div className="flex items-center mt-2">
+                    {[...Array(calculateAverageRating(vendor.reviews))].map((_, index) => (
+                      <svg key={index} className="w-4 h-4 fill-current text-yellow-500 mr-1" viewBox="0 0 20 20">
+                        <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
+                      </svg>
+                    ))}
+                  </div>
+                </div>
+              </div>
+              <div className="flex justify-between">
                 <button
-                    onClick={() => selectVendor(vendor)}
-                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded ml-2"
+                  onClick={() => handleViewVendor(vendor.id)}
+                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
                 >
-                    Select
+                  View Details
                 </button>
-                </li>
-            ))}
-            </ul>
+                <button
+                  onClick={() => selectVendor(vendor)}
+                  className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+                >
+                  Select
+                </button>
+              </div>
             </div>
           ))}
         </div>
