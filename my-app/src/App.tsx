@@ -7,6 +7,7 @@ import Login from './Login';
 import SignUp from './Signup';
 import TodoList from './Todo';
 import LiveStream from './Livestream';
+import GuestLiveStream from './GuestLivestream';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
         <Route path="/vendors/:vendorId" component={VendorPage} />
         <Route path="/todo" component={TodoList} />
         <Route path="/livestream" component={LiveStream} />
+        <Route path="/guest/livestream" component={GuestLiveStream} />
       </Switch>
     </Router>
   );
