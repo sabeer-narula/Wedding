@@ -6,6 +6,7 @@ import VendorPage from './VendorPage';
 import Login from './Login';
 import SignUp from './Signup';
 import TodoList from './Todo';
+import LiveStream from './Livestream';
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         <Route path="/vendors" exact component={Vendors} />
         <Route path="/vendors/:vendorId" component={VendorPage} />
         <Route path="/todo" component={TodoList} />
+        <Route path="/livestream" component={LiveStream} />
       </Switch>
     </Router>
   );
