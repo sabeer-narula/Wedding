@@ -1,6 +1,6 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
-import vendorData from './vendorData';
+import vendorData from '../vendorData';
 import Header from './Header';
 
 const VendorPage: React.FC = () => {

@@ -1,13 +1,13 @@
 import React from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
-import Dashboard from './Dashboard';
-import Vendors from './Vendors';
-import VendorPage from './VendorPage';
-import Login from './Login';
-import SignUp from './Signup';
-import TodoList from './Todo';
-import LiveStream from './Livestream';
-import GuestLiveStream from './GuestLivestream';
+import Dashboard from './components/Dashboard';
+import Vendors from './components/Vendors';
+import VendorPage from './components/VendorPage';
+import Login from './components/Login';
+import SignUp from './components/Signup';
+import TodoList from './components/Todo';
+import LiveStream from './components/Livestream';
+import GuestLiveStream from './components/GuestLivestream';
 
 function App() {
   return (

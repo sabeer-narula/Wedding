@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { setSelectedVendor } from './store';
+import { setSelectedVendor } from '../store';
 import Header from './Header';
-import vendorData from './vendorData';
+import vendorData from '../vendorData';
 
 const Vendors = () => {
   const dispatch = useDispatch();
