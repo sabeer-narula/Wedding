@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { setSelectedVendor } from '../store';
+import { auth, firestore } from '../firebase';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
+import { doc, setDoc, collection, getDocs } from 'firebase/firestore';
 import Header from './Header';
 import vendorData from '../vendorData';
 
@@ -19,8 +22,16 @@ const Vendors = () => {
     reviews: { rating: number; review: string }[];
   }
 
-  const selectVendor = (vendor: Vendor) => {
+  const selectVendor = async (vendor: Vendor) => {
     dispatch(setSelectedVendor(vendor));
+    try {
+      const user = auth.currentUser;
+      if (user) {
+        await setDoc(doc(firestore, 'users', user.uid, 'selectedVendors', vendor.id.toString()), vendor);
+      }
+    } catch (error) {
+      console.error('Error saving selected vendor:', error);
+    }
   };
 
   const handleViewVendor = (vendorId: number) => {

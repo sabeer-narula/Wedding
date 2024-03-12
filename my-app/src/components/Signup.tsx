@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
+import { auth, firestore } from '../firebase';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
+import { doc, setDoc, collection, getDocs } from 'firebase/firestore';
 import Header from './Header';
 
 const SignUp: React.FC = () => {
@@ -10,18 +13,27 @@ const SignUp: React.FC = () => {
   const [error, setError] = useState('');
   const history = useHistory();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (password !== confirmPassword) {
       setError('Passwords do not match');
       return;
     }
-    // Store the user information in a local file or in memory
-    const users = JSON.parse(localStorage.getItem('users') || '[]');
-    users.push({ username, email, password });
-    localStorage.setItem('users', JSON.stringify(users));
-    // Redirect to login page on successful signup
-    history.push('/login');
+    try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+        await setDoc(doc(firestore, 'users', user.uid), {
+          username,
+          email,
+        });
+        history.push('/login');
+      } catch (error) {
+        if (error instanceof Error) {
+          setError(error.message);
+        } else {
+          setError('An unknown error occurred');
+        }
+      }
   };
 
   return (
