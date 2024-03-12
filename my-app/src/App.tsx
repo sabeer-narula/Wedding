@@ -8,6 +8,7 @@ import SignUp from './components/Signup';
 import TodoList from './components/Todo';
 import LiveStream from './components/Livestream';
 import GuestLiveStream from './components/GuestLivestream';
+import Profile from './components/Profile';
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
         <Route path="/todo" component={TodoList} />
         <Route path="/livestream" component={LiveStream} />
         <Route path="/guest/livestream" component={GuestLiveStream} />
+        <Route path="/Profile" component={Profile} />
       </Switch>
     </Router>
   );

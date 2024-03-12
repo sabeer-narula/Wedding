@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Header from './Header';
+import { auth, firestore } from '../firebase';
+import { collection, doc, getDocs, setDoc, deleteDoc, updateDoc, onSnapshot } from 'firebase/firestore';
 
 interface Task {
   id: number;
@@ -27,7 +29,24 @@ const TodoList: React.FC = () => {
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [filterLabel, setFilterLabel] = useState('');
 
-  const handleAddTask = () => {
+  useEffect(() => {
+    const user = auth.currentUser;
+    if (user) {
+      const unsubscribe = onSnapshot(collection(firestore, 'users', user.uid, 'tasks'), (snapshot) => {
+        const tasksData: Task[] = [];
+        snapshot.forEach((doc) => {
+          tasksData.push(doc.data() as Task);
+        });
+        setTasks(tasksData.filter((task) => !task.completed));
+        setCompletedTasks(tasksData.filter((task) => task.completed));
+      });
+  
+      // Unsubscribe from the listener when the component unmounts
+      return () => unsubscribe();
+    }
+  }, []);
+
+  const handleAddTask = async () => {
     if (newTask.trim() !== '') {
       const newTaskItem: Task = {
         id: Date.now(),
@@ -38,26 +57,29 @@ const TodoList: React.FC = () => {
         budget: 0,
         notes: '',
       };
-      setTasks([...tasks, newTaskItem]);
+      const user = auth.currentUser;
+      if (user) {
+        await setDoc(doc(firestore, 'users', user.uid, 'tasks', newTaskItem.id.toString()), newTaskItem);
+      }
       setNewTask('');
       setNewDueDate('');
       setSelectedLabel('');
     }
   };
 
-  const handleRemoveTask = (taskId: number) => {
-    const updatedTasks = tasks.filter((task) => task.id !== taskId);
-    setTasks(updatedTasks);
+  const handleRemoveTask = async (taskId: number) => {
+    const user = auth.currentUser;
+    if (user) {
+      await deleteDoc(doc(firestore, 'users', user.uid, 'tasks', taskId.toString()));
+    }
   };
 
-  const handleToggleCompleted = (taskId: number) => {
-    const updatedTasks = tasks.filter((task) => task.id !== taskId);
-    const completedTask = tasks.find((task) => task.id === taskId);
-    if (completedTask) {
-      completedTask.completed = true;
-      setCompletedTasks([...completedTasks, completedTask]);
+  const handleToggleCompleted = async (taskId: number) => {
+    const user = auth.currentUser;
+    if (user) {
+      const taskRef = doc(firestore, 'users', user.uid, 'tasks', taskId.toString());
+      await updateDoc(taskRef, { completed: true });
     }
-    setTasks(updatedTasks);
   };
 
   const handleAddLabel = () => {

@@ -1,38 +1,54 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { setSelectedVendor } from '../store';
 import { auth, firestore } from '../firebase';
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
-import { doc, setDoc, collection, getDocs } from 'firebase/firestore';
+import { doc, setDoc, collection, getDocs, updateDoc } from 'firebase/firestore';
 import Header from './Header';
 import vendorData from '../vendorData';
+import { setSelectedVendor, setSelectedVendors } from '../store';
+
+interface Vendor {
+  id: number;
+  name: string;
+  type: string;
+  price: number;
+  photos: string[];
+  reviews: { rating: number; review: string }[];
+}
 
 const Vendors = () => {
   const dispatch = useDispatch();
   const history = useHistory();
   const [selectedType, setSelectedType] = useState('');
 
-  interface Vendor {
-    id: number;
-    name: string;
-    type: string;
-    price: number;
-    photos: string[];
-    reviews: { rating: number; review: string }[];
-  }
-
   const selectVendor = async (vendor: Vendor) => {
-    dispatch(setSelectedVendor(vendor));
     try {
       const user = auth.currentUser;
       if (user) {
-        await setDoc(doc(firestore, 'users', user.uid, 'selectedVendors', vendor.id.toString()), vendor);
+        const vendorRef = doc(firestore, 'users', user.uid, 'selectedVendors', vendor.type);
+        await setDoc(vendorRef, {
+          id: vendor.id,
+          name: vendor.name,
+          type: vendor.type,
+          price: vendor.price,
+        });
+  
+        // Fetch the updated selected vendors data from Firestore
+        const snapshot = await getDocs(collection(firestore, 'users', user.uid, 'selectedVendors'));
+        const updatedSelectedVendors: { [key: string]: Vendor } = {};
+        snapshot.forEach((doc) => {
+          const data = doc.data() as Vendor;
+          updatedSelectedVendors[data.type] = data;
+        });
+  
+        // Update the Redux store with the latest selected vendors data
+        dispatch(setSelectedVendors(updatedSelectedVendors));
       }
     } catch (error) {
       console.error('Error saving selected vendor:', error);
     }
   };
+
 
   const handleViewVendor = (vendorId: number) => {
     history.push(`/vendors/${vendorId}`);
