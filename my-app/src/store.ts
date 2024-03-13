@@ -1,5 +1,4 @@
-import { configureStore, createAction, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { createReducer } from '@reduxjs/toolkit';
+import { configureStore, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 
 interface Vendor {
@@ -29,12 +28,12 @@ interface AppState {
 }
 
 const guestsData = [
-    { id: 1, name: 'John Doe', attending: true, guests: 2, dinner: 'steak', dietaryRestrictions: '' },
-    { id: 2, name: 'Jane Smith', attending: true, guests: 1, dinner: 'salmon', dietaryRestrictions: 'Gluten-free' },
-    { id: 3, name: 'Mike Johnson', attending: false, guests: 0, dinner: '', dietaryRestrictions: '' },
-    { id: 4, name: 'Emily Davis', attending: true, guests: 3, dinner: 'vegetarian', dietaryRestrictions: 'Vegan' },
-    { id: 5, name: 'Robert Wilson', attending: true, guests: 2, dinner: 'steak', dietaryRestrictions: 'Nut allergy' },
-  ];
+  { id: 1, name: 'John Doe', attending: true, guests: 2, dinner: 'steak', dietaryRestrictions: '' },
+  { id: 2, name: 'Jane Smith', attending: true, guests: 1, dinner: 'salmon', dietaryRestrictions: 'Gluten-free' },
+  { id: 3, name: 'Mike Johnson', attending: false, guests: 0, dinner: '', dietaryRestrictions: '' },
+  { id: 4, name: 'Emily Davis', attending: true, guests: 3, dinner: 'vegetarian', dietaryRestrictions: 'Vegan' },
+  { id: 5, name: 'Robert Wilson', attending: true, guests: 2, dinner: 'steak', dietaryRestrictions: 'Nut allergy' },
+];
 
 const initialAppState: AppState = {
   selectedVendors: {},
@@ -64,29 +63,29 @@ export const { setSelectedVendor, setSelectedVendors } = vendorSlice.actions;
 // export const setSelectedVendors = createAction<{ [key: string]: Vendor }>('vendor/setSelectedVendors');
 
 const guestSlice = createSlice({
-    name: 'guest',
-    initialState: initialAppState,
-    reducers: {
-      setGuests(state, action: PayloadAction<Guest[]>) {
-        state.guests = action.payload;
-      },
-      addGuest(state, action: PayloadAction<Guest>) {
-        state.guests.push(action.payload);
-      },
-      // Add more reducers as needed (e.g., updateGuest, removeGuest)
+  name: 'guest',
+  initialState: initialAppState,
+  reducers: {
+    setGuests(state, action: PayloadAction<Guest[]>) {
+      state.guests = action.payload;
     },
-  });
-  
-  export const { setGuests, addGuest } = guestSlice.actions;
-
-  export const store = configureStore({
-    reducer: {
-      vendor: vendorSlice.reducer,
-      guest: guestSlice.reducer,
+    addGuest(state, action: PayloadAction<Guest>) {
+      state.guests.push(action.payload);
     },
-  });
+    // Add more reducers as needed (e.g., updateGuest, removeGuest)
+  },
+});
 
-  
+export const { setGuests, addGuest } = guestSlice.actions;
+
+export const store = configureStore({
+  reducer: {
+    vendor: vendorSlice.reducer,
+    guest: guestSlice.reducer,
+  },
+});
+
+
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;

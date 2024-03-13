@@ -42,8 +42,18 @@ const TodoList: React.FC = () => {
         setCompletedTasks(tasksData.filter((task) => task.completed));
       });
 
-      // Unsubscribe from the listener when the component unmounts
-      return () => unsubscribe();
+      const unsubscribeLabels = onSnapshot(collection(firestore, 'users', user.uid, 'labels'), (snapshot) => {
+        const labelsData: Label[] = [];
+        snapshot.forEach((doc) => {
+          labelsData.push(doc.data() as Label);
+        });
+        setLabels(labelsData);
+      });
+
+      return () => {
+        unsubscribe();
+        unsubscribeLabels();
+      };
     }
   }, []);
 
@@ -75,21 +85,24 @@ const TodoList: React.FC = () => {
     }
   };
 
-  const handleToggleCompleted = async (taskId: number) => {
+  const handleToggleCompleted = async (taskId: number, completed: boolean) => {
     const user = auth.currentUser;
     if (user) {
       const taskRef = doc(firestore, 'users', user.uid, 'tasks', taskId.toString());
-      await updateDoc(taskRef, { completed: true });
+      await updateDoc(taskRef, { completed });
     }
   };
 
-  const handleAddLabel = () => {
+  const handleAddLabel = async () => {
     if (newLabel.trim() !== '') {
       const newLabelItem: Label = {
         id: Date.now(),
         name: newLabel,
       };
-      setLabels([...labels, newLabelItem]);
+      const user = auth.currentUser;
+      if (user) {
+        await setDoc(doc(firestore, 'users', user.uid, 'labels', newLabelItem.id.toString()), newLabelItem);
+      }
       setNewLabel('');
     }
   };
@@ -100,6 +113,19 @@ const TodoList: React.FC = () => {
 
   const handleCloseModal = () => {
     setSelectedTask(null);
+  };
+
+  const handleSaveModal = async () => {
+    if (selectedTask) {
+      const user = auth.currentUser;
+      if (user) {
+        await updateDoc(doc(firestore, 'users', user.uid, 'tasks', selectedTask.id.toString()), {
+          budget: selectedTask.budget,
+          notes: selectedTask.notes,
+        });
+      }
+      handleCloseModal();
+    }
   };
 
   const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -185,37 +211,40 @@ const TodoList: React.FC = () => {
         </div>
         <ul>
           {filteredTasks.map((task) => (
-            <li key={task.id} className="mb-4">
-              <span>{task.text}</span>
-              <span> - Due: {task.dueDate}</span>
+            <li key={task.id} className="mb-4 flex items-center">
+              <input
+                type="checkbox"
+                checked={task.completed}
+                onChange={() => handleToggleCompleted(task.id, !task.completed)}
+                className="mr-2"
+              />
+              <span className={task.completed ? 'line-through' : ''}>{task.text}</span>
+              {task.dueDate && (
+                <span className="ml-2">
+                  - Due: {new Date(task.dueDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                </span>
+              )}
               {task.labels.map((label) => (
                 <span key={label} className="label bg-gray-200 rounded px-2 py-1 ml-2">
                   {label}
                 </span>
               ))}
-              <div className="mt-2">
-                <button
-                  onClick={() => handleOpenModal(task)}
-                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded mr-2"
-                >
-                  See More
-                </button>
-                <button
-                  onClick={() => handleToggleCompleted(task.id)}
-                  className="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 rounded mr-2"
-                >
-                  Complete
-                </button>
-                <button
-                  onClick={() => handleRemoveTask(task.id)}
-                  className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded"
-                >
-                  Remove
-                </button>
-              </div>
+              <button
+                onClick={() => handleOpenModal(task)}
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded ml-auto"
+              >
+                See More
+              </button>
+              <button
+                onClick={() => handleRemoveTask(task.id)}
+                className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded ml-2"
+              >
+                Remove
+              </button>
             </li>
           ))}
         </ul>
+
         <button
           onClick={() => setShowCompletedTasks(!showCompletedTasks)}
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded mb-4"
@@ -242,25 +271,40 @@ const TodoList: React.FC = () => {
             </div>
             <ul>
               {filteredCompletedTasks.map((task) => (
-                <li key={task.id} className="mb-4">
-                  <span>{task.text}</span>
-                  <span> - Due: {task.dueDate}</span>
+                <li key={task.id} className="mb-4 flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={task.completed}
+                    onChange={() => handleToggleCompleted(task.id, !task.completed)}
+                    className="mr-2"
+                  />
+                  <span className="line-through">{task.text}</span>
+                  {task.dueDate && (
+                    <span className="ml-2">
+                      - Due: {new Date(task.dueDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                    </span>
+                  )}
                   {task.labels.map((label) => (
                     <span key={label} className="label bg-gray-200 rounded px-2 py-1 ml-2">
                       {label}
                     </span>
                   ))}
-                  <div className="mt-2">
-                    <button
-                      onClick={() => handleOpenModal(task)}
-                      className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
-                    >
-                      See More
-                    </button>
-                  </div>
+                  <button
+                    onClick={() => handleOpenModal(task)}
+                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded ml-auto"
+                  >
+                    See More
+                  </button>
+                  <button
+                    onClick={() => handleRemoveTask(task.id)}
+                    className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded ml-2"
+                  >
+                    Remove
+                  </button>
                 </li>
               ))}
             </ul>
+
           </div>
         )}
         {selectedTask && (
@@ -292,12 +336,20 @@ const TodoList: React.FC = () => {
                   className="border border-gray-300 rounded px-2 py-1"
                 ></textarea>
               </div>
-              <button
-                onClick={handleCloseModal}
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
-              >
-                Close
-              </button>
+              <div className="mt-4">
+                <button
+                  onClick={handleSaveModal}
+                  className="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 rounded mr-2"
+                >
+                  Save
+                </button>
+                <button
+                  onClick={handleCloseModal}
+                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
+                >
+                  Close
+                </button>
+              </div>
             </div>
           </div>
         )}
