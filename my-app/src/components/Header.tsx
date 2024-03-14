@@ -32,6 +32,11 @@ const Header = () => {
             </Link>
           </li>
           <li>
+            <Link to="/chatbot" className="hover:text-gray-300">
+              Chatbot
+            </Link>
+          </li>
+          <li>
             <Link to="/todo" className="hover:text-gray-300">
               To Do List
             </Link>

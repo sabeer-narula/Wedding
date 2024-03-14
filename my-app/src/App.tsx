@@ -9,6 +9,7 @@ import TodoList from './components/Todo';
 import LiveStream from './components/Livestream';
 import GuestLiveStream from './components/GuestLivestream';
 import Profile from './components/Profile';
+import Chatbot from './components/Chatbot';
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
         <Route path="/livestream" component={LiveStream} />
         <Route path="/guest/livestream" component={GuestLiveStream} />
         <Route path="/Profile" component={Profile} />
+        <Route path="/Chatbot" component={Chatbot} />
       </Switch>
     </Router>
   );
